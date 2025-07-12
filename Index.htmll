@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivo - Investing Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Basic CSS Reset & General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-color: #f0f2f5; */ /* This will be covered by login-page or app-content */
+            color: #333;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative; /* For absolute positioning of login page */
+            min-height: 100vh; /* Ensure body takes full height */
+        }
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column; /* Changed to column to stack header, content, footer */
+            overflow: hidden; /* This is for the app content inside the container */
+            position: relative; /* To contain header/footer sticky elements */
+        }
+        header {
+            background-image: linear-gradient(to right, #4CAF50, #66BB6A); /* Gradient green */
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; /* Sticky header */
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .wallet-icon {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 5px 12px;
+        }
+        .wallet-icon i {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        .wallet-icon span {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .wallet-info {
+            background-color: #fff;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        .wallet-info h2 {
+            margin: 0 0 15px;
+            font-size: 20px;
+            color: #555;
+            font-weight: 600;
+        }
+        .wallet-info p {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .wallet-buttons button {
+            background-image: linear-gradient(to right, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+        }
+        .wallet-buttons button:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding: 15px;
+            flex-grow: 1; /* Allow main content to take available space */
+            overflow-y: auto; /* Enable scroll within main content */
+            padding-bottom: 70px; /* Space for the fixed bottom navigation */
+        }
+
+        /* Page Section Management */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin: 25px 0 20px 5px; /* Increased margin-top */
+            border-left: 5px solid #4CAF50;
+            padding-left: 10px;
+        }
+
+        /* Home Page - Device Listing */
+        .device-card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 18px; /* Increased margin-bottom */
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease-in-out;
+        }
+        .device-card:hover {
+            transform: translateY(-3px);
+        }
+        .device-card img {
+            width: 100px;
+            height: 100px;
+            min-width: 100px; /* Ensure image doesn't shrink */
+            margin-right: 20px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #eee;
+        }
+        .device-details {
+            flex-grow: 1;
+        }
+        .device-details h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .device-details p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        .device-investment {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            justify-content: space-between;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+        .device-investment button {
+            background-image: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 3px 6px rgba(76, 175, 80, 0.3);
+            transition: transform 0.2s ease-in-out;
+            margin-top: 10px; /* For wrapping behavior */
+        }
+        .device-investment button:hover {
+            transform: translateY(-1px);
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 10px; /* Space from button */
+            margin-top: 10px; /* For wrapping behavior */
+        }
+        .quantity-control button {
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            transition: background-color 0.2s;
+            box-shadow: none;
+            margin: 0; /* Remove button margin */
+        }
+        .quantity-control button:hover {
+            background-color: #d0d0d0;
+            transform: none;
+        }
+        .quantity-control span {
+            margin: 0 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Bottom Navigation - FIXED POSITION */
+        .bottom-nav {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            position: fixed; /* Changed from sticky to fixed */
+            bottom: 0;
+            width: 100%; /* Ensure it spans full width */
+            max-width: 420px; /* Match container max-width */
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.08);
+            z-index: 1000; /* Ensure it's above content */
+        }
+        .nav-item {
+            text-align: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 5px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: color 0.2s ease-in-out;
+        }
+        .nav-item.active {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        /* Modals and Overlays */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            font-size: 30px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-button:hover {
+            color: #333;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .modal-content input[type="text"],
+        .modal-content input[type="number"],
+        .modal-content input[type="password"],
+        .modal-content select {
+            width: calc(100% - 24px); /* Account for padding */
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .modal-content button {
+            background-image: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+            transition: transform 0.2s ease-in-out;
+        }
+        .modal-content button:hover {
+            transform: translateY(-2px);
+        }
+        .qr-code-area {
+            text-align: center;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px dashed #e0e0e0;
+        }
+        .qr-code-area img {
+            width: 160px;
+            height: 160px;
+            border: 2px solid #eee;
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .copy-upi-btn {
+            background-image: linear-gradient(to right, #007bff, #0056b3) !important;
+            margin-top: 15px !important;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3) !important;
+        }
+        .copy-upi-btn:hover {
+            background-image: linear-gradient(to right, #0056b3, #007bff) !important; /* Reverse gradient on hover */
+        }
+        /* Style for secondary buttons in modal */
+        .modal-content .secondary-button {
+            background-image: linear-gradient(to right, #6c757d, #5a6268) !important;
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3) !important;
+        }
+        .modal-content .secondary-button:hover {
+            background-image: linear-gradient(to right, #5a6268, #6c757d) !important;
+        }
+
+
+        /* Total Investing Section - Each device gets a section */
+        .investment-progress-card {
+            background-image: linear-gradient(to right, #333, #555);
+            color: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            position: relative; /* For image */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .investment-progress-card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .investment-progress-card .progress-box {
+            background-color: #666;
+            height: 35px;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-top: 20px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.3);
+            width: 90%; /* Make progress bar narrower */
+            max-width: 300px;
+        }
+        .investment-progress-card .progress-line {
+            background-image: linear-gradient(to right, #4CAF50, #8BC34A);
+            height: 100%;
+            width: 0%;
+            border-radius: 18px;
+            transition: width 1s linear; /* Smooth transition */
+        }
+        .investment-progress-card .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            min-width: 80px; /* Ensure text space */
+            text-align: center;
+        }
+        .investment-progress-card .get-it-button {
+            background-image: linear-gradient(to right, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: not-allowed;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 25px;
+            opacity: 0.6;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .investment-progress-card .get-it-button.active {
+            opacity: 1;
+            cursor: pointer;
+            background-image: linear-gradient(to right, #00bcd4, #007bff); /* Blueish gradient when active */
+            box-shadow: 0 4px 8px rgba(0, 188, 212, 0.4);
+        }
+        .investment-progress-card .get-it-button.active:hover {
+            transform: translateY(-2px);
+        }
+        .investment-progress-card .device-image-thumb {
+            width: 70px; /* Slightly larger */
+            height: 70px;
+            border-radius: 50%; /* Make it round */
+            object-fit: cover;
+            border: 3px solid white; /* Thicker border */
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .investment-progress-card .total-earned-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: #8BC34A; /* Lighter green */
+            margin-top: 10px;
+        }
+
+        /* Refer Page */
+        .social-share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .social-share-buttons a {
+            font-size: 30px;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        .social-share-buttons a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+        .social-share-buttons .whatsapp { background-color: #25D366; }
+        .social-share-buttons .facebook { background-color: #3B5998; }
+        .social-share-buttons .instagram { background-color: #E4405F; }
+        .social-share-buttons .telegram { background-color: #0088CC; }
+
+        /* VIP Section */
+        .vip-section {
+            background-color: #fce4ec; /* Light pink background */
+            padding: 20px;
+            margin: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 1px solid #f8bbd0;
+        }
+        .vip-section h2 {
+            color: #d81b60; /* Darker pink */
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .vip-level-card {
+            background-color: #fff;
+            border: 1px solid #f06292;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .vip-level-card h3 {
+            color: #ad1457; /* Even darker pink */
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+        .vip-level-card p {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+        .vip-level-card span.highlight {
+            font-weight: 600;
+            color: #d81b60;
+        }
+
+        /* Profile Page */
+        .profile-option {
+            background-color: #fff;
+            padding: 18px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease-in-out;
+        }
+        .profile-option:hover {
+            transform: translateY(-2px);
+            background-color: #f9f9f9;
+        }
+        .profile-option span {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+        .profile-option i {
+            color: #888;
+            font-size: 18px;
+        }
+
+        /* History items in modals */
+        .history-list-container {
+            max-height: 300px; /* Scrollable area */
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-right: 5px; /* For scrollbar */
+        }
+        .history-item {
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+        .history-item span {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 14px;
+            color: #555;
+        }
+        .history-item strong {
+            font-weight: 600;
+        }
+        .history-item .status-text {
+            font-weight: 700;
+        }
+
+        /* Login Page Styles */
+        .login-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* This centers horizontally */
+            justify-content: center; /* This centers vertically */
+            min-height: 100vh;
+            background-image: linear-gradient(to bottom right, #4CAF50, #2196F3, #FF9800); /* Multi-color gradient */
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+            position: fixed; /* Use fixed to cover entire viewport */
+            top: 0;
+            left: 0;
+            z-index: 100; /* Ensure it's above other elements but below modals */
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        .login-form-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .login-form-container h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .login-form-container input[type="text"],
+        .login-form-container input[type="number"],
+        .login-form-container input[type="password"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .login-form-container button {
+            background-image: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+            transition: transform 0.2s ease-in-out;
+        }
+        .login-form-container button:hover {
+            transform: translateY(-2px);
+        }
+        .toggle-form-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .forgot-password-link {
+            font-size: 13px;
+            margin-top: 15px;
+            display: block;
+            color: #666;
+            cursor: pointer;
+        }
+        .form-section {
+            display: none; /* Hidden by default */
+        }
+        .form-section.active {
+            display: block;
+        }
+        .otp-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .otp-input-group input {
+            flex-grow: 1;
+            margin-right: 10px;
+            margin-bottom: 0; /* Override default margin */
+        }
+        .otp-input-group button {
+            width: auto;
+            padding: 10px 15px;
+            font-size: 14px;
+            margin-top: 0; /* Override default margin */
+            box-shadow: none;
+            background-image: linear-gradient(to right, #FF9800, #F57C00); /* Orange for OTP */
+        }
+        .otp-input-group button:hover {
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <section id="login-page" class="login-page">
+        <div class="login-header">
+            <h1>VIVO</h1>
+        </div>
+        <div class="login-form-container">
+            <div id="login-form" class="form-section active">
+                <h2>Login</h2>
+                <input type="number" id="login-mobile" placeholder="Mobile Number" required maxlength="10">
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button onclick="handleLogin()">Login</button>
+                <span class="forgot-password-link" onclick="alert('Forgot password functionality is a demo. Please contact support.')">Forgot Password?</span>
+                <a href="#" class="toggle-form-link" onclick="toggleForm('signup')">Don't have an account? Sign Up</a>
+            </div>
+
+            <div id="signup-form" class="form-section">
+                <h2>Sign Up</h2>
+                <input type="number" id="signup-mobile" placeholder="Mobile Number" required maxlength="10">
+                <input type="text" id="signup-name" placeholder="Full Name" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <input type="password" id="signup-repassword" placeholder="Re-enter Password" required>
+                <div class="otp-input-group">
+                    <input type="text" id="signup-otp" placeholder="Enter OTP" required maxlength="6">
+                    <button id="send-otp-btn" onclick="sendOtp()">Send OTP</button>
+                </div>
+                <button onclick="handleSignup()">Sign Up</button>
+                <span class="forgot-password-link" onclick="alert('Forgot password functionality is a demo. Please contact support.')">Forgot Password?</span>
+                <a href="#" class="toggle-form-link" onclick="toggleForm('login')">Already have an account? Login</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" id="app-container" style="display: none;">
+        <header>
+            <h1>Vivo</h1>
+            <div class="wallet-icon">
+                <i class="fas fa-wallet"></i>
+                <span id="wallet-balance-display">₹0.00</span>
+            </div>
+        </header>
+
+        <div class="main-content" id="app-content">
+            <section id="home-page" class="page-section">
+                <div class="wallet-info">
+                    <h2>Available Balance</h2>
+                    <p id="current-wallet-balance">₹0.00</p>
+                    <div class="wallet-buttons">
+                        <button id="recharge-btn">Recharge</button>
+                        <button id="withdrawal-btn">Withdrawal</button>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Invest in Devices</h2>
+                <div id="device-list">
+                    </div>
+            </section>
+
+            <section id="refer-page" class="page-section" style="display: none;">
+                <div class="wallet-info">
+                    <h2>Refer & Earn</h2>
+                    <p style="font-size: 16px;">Share your unique referral link and earn commission!</p>
+                    <div style="background-color: #f5f5f5; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px dashed #ddd; text-align: center;">
+                        <span id="referral-link" style="font-size: 14px; word-break: break-all; color: #555; font-weight: 500;">Loading referral link...</span>
+                        <button class="copy-upi-btn" style="width: auto; margin-top: 15px; padding: 8px 15px;" onclick="copyReferralLink()">
+                            <i class="fas fa-copy"></i> Copy Link
+                        </button>
+                    </div>
+                    <div class="social-share-buttons">
+                        <a href="#" onclick="shareLink('whatsapp')" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" onclick="shareLink('facebook')" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" onclick="shareLink('instagram')" class="instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" onclick="shareLink('telegram')" class="telegram"><i class="fab fa--telegram-plane"></i></a>
+                    </div>
+                    <p style="margin-top: 25px; font-size: 14px; color: #666; text-align: center;">
+                        You'll earn **10% commission** on direct referrals and **5%** on indirect referrals. (Demo Logic)
+                    </p>
+                </div>
+
+                <div class="vip-section">
+                    <h2>VIP Levels & Benefits</h2>
+                    <div class="vip-level-card">
+                        <h3>VIP Level 1: Bronze</h3>
+                        <p>Investment Range: <span class="highlight">₹800 - ₹2000</span></p>
+                        <p>Daily Bonus: <span class="highlight">1.0%</span> of daily income</p>
+                        <p>Withdrawal Limit: Up to ₹5000/day</p>
+                    </div>
+                    <div class="vip-level-card">
+                        <h3>VIP Level 2: Silver</h3>
+                        <p>Investment Range: <span class="highlight">₹2001 - ₹5000</span></p>
+                        <p>Daily Bonus: <span class="highlight">1.5%</span> of daily income</p>
+                        <p>Withdrawal Limit: Up to ₹10000/day</p>
+                    </div>
+                    <div class="vip-level-card">
+                        <h3>VIP Level 3: Gold</h3>
+                        <p>Investment Range: <span class="highlight">₹5001 - ₹15000</span></p>
+                        <p>Daily Bonus: <span class="highlight">2.0%</span> of daily income</p>
+                        <p>Withdrawal Limit: Up to ₹25000/day</p>
+                    </div>
+                    <p style="font-size: 13px; color: #777; margin-top: 15px;">
+                        (VIP benefits are illustrative and for demonstration purposes only.)
+                    </p>
+                </div>
+            </section>
+
+            <section id="profile-page" class="page-section" style="display: none;">
+                <div class="wallet-info">
+                    <h2>My Profile</h2>
+                    <p style="font-size: 20px; color: #333;" id="user-mobile-display">Loading User...</p>
+                </div>
+                <div class="main-content" style="padding-top: 0;">
+                    <div class="profile-option" id="withdrawal-request-option">
+                        <span>Withdrawal Requests</span> <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="profile-option" id="payment-history-option">
+                        <span>Payment History</span> <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="profile-option" id="about-option">
+                        <span>About / Contact Us</span> <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="profile-option" onclick="handleLogout()">
+                        <span>Logout</span> <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section id="total-investing-page" class="page-section" style="display: none;">
+                <h2 class="section-title">Your Active Investments</h2>
+                <div id="active-investments-list">
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">No active investments yet. Invest in devices from the Home page!</p>
+                </div>
+            </section>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-page="home-page">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="#" class="nav-item" data-page="total-investing-page">
+                <i class="fas fa-chart-line"></i> Investing
+            </a>
+            <a href="#" class="nav-item" data-page="refer-page">
+                <i class="fas fa-share-alt"></i> Refer
+            </a>
+            <a href="#" class="nav-item" data-page="profile-page">
+                <i class="fas fa-user"></i> Profile
+            </a>
+        </nav>
+    </div>
+
+    <div id="rechargeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal('rechargeModal')">&times;</span>
+            <h2>Recharge Wallet</h2>
+            <p style="text-align: center; margin-bottom: 15px; color: #555;">Select Payment Method:</p>
+            <select id="paymentMethodSelect">
+                <option value="upi">UPI (PhonePe, Google Pay, Paytm, etc.)</option>
+            </select>
+            <input type="number" id="rechargeAmount" placeholder="Enter Amount (min ₹800, max ₹10000)" min="800" max="10000">
+            <div class="qr-code-area">
+                <p style="font-weight: 600; color: #333;">Scan to Pay:</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=your_upi_id@bankname&pn=VivoUser&mc=0000&tid=xxxxxxxxx&tr=xxxxxxxxx&tn=Recharge" alt="QR Code">
+                <p style="font-size: 14px; margin-top: 10px; color: #666;">Or copy UPI ID:</p>
+                <p style="font-size: 16px; font-weight: bold; color: #4CAF50;" id="displayed-upi-id">your_upi_id@bankname</p>
+                <button class="copy-upi-btn" onclick="copyUpiId('your_upi_id@bankname')">
+                    <i class="fas fa-copy"></i> Copy UPI ID
+                </button>
+            </div>
+            <button onclick="processRecharge()">I have Paid (Confirm)</button>
+        </div>
+    </div>
+
+    <div id="withdrawalModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal('withdrawalModal')">&times;</span>
+            <div id="withdrawal-details-input">
+                <h2>Enter Bank Details</h2>
+                <input type="text" id="withdrawalName" placeholder="Account Holder Name" required>
+                <input type="number" id="withdrawalAccountNumber" placeholder="Account Number" required>
+                <input type="text" id="withdrawalIFSC" placeholder="IFSC Code" required>
+                <input type="number" id="withdrawalMobile" placeholder="Mobile Number (Optional)">
+                <input type="password" id="withdrawalPassword" placeholder="Your Password" required>
+                <button onclick="saveWithdrawalDetails()">Complete</button>
+            </div>
+            <div id="withdrawal-amount-input" style="display: none;">
+                <h2>Withdraw Amount</h2>
+                <input type="number" id="withdrawAmount" placeholder="Enter Amount to Withdraw" min="100" required>
+                <input type="password" id="withdrawPasswordConfirm" placeholder="Your Password" required>
+                <button onclick="requestWithdrawal()">Request Withdrawal</button>
+                <button class="secondary-button" style="margin-top: 10px;" onclick="showModifyAccount()">
+                    <i class="fas fa-edit"></i> Modify Account Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="withdrawalRequestModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal('withdrawalRequestModal')">&times;</span>
+            <h2>Your Withdrawal Requests</h2>
+            <div id="withdrawal-requests-list" class="history-list-container">
+                <p style="text-align: center; color: #888;">No withdrawal requests yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="paymentHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal('paymentHistoryModal')">&times;</span>
+            <h2>Your Payment History</h2>
+            <div id="payment-history-list" class="history-list-container">
+                <p style="text-align: center; color: #888;">No payment history found.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration (YOUR ACTUAL CONFIG)
+        const firebaseConfig = {
+          apiKey: "AIzaSyDHDF8wcOcAqx8-Nqa0cx0MmkysNFPqjVQ",
+          authDomain: "admin-panel-2f15f.firebaseapp.com",
+          databaseURL: "https://admin-panel-2f15f-default-rtdb.firebaseio.com",
+          projectId: "admin-panel-2f15f",
+          storageBucket: "admin-panel-2f15f.firebasestorage.app",
+          messagingSenderId: "776832085102",
+          appId: "1:776832085102:web:a8d359b0dbfe9efb840a7f",
+          measurementId: "G-GCZMPD5934" // For Firebase Analytics (optional)
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            firebase.app(); // if already initialized, use that one
+        }
+
+        // Get references to Firebase services
+        const auth = firebase.auth();
+        const database = firebase.database(); // For Realtime Database
+
+        // --- Global Variables ---
+        let currentUser = null; // Stores current logged in user's Firebase UID and data reference
+
+        // Reliable Placeholder Images (from picsum.photos for phone-like images)
+        const DEVICE_IMAGES = [
+            'https://picsum.photos/id/1/100/100',
+            'https://picsum.photos/id/2/100/100',
+            'https://picsum.photos/id/3/100/100',
+            'https://picsum.photos/id/4/100/100',
+            'https://picsum.photos/id/5/100/100',
+            'https://picsum.photos/id/6/100/100',
+            'https://picsum.photos/id/7/100/100',
+            'https://picsum.photos/id/8/100/100',
+            'https://picsum.photos/id/9/100/100',
+            'https://picsum.photos/id/10/100/100'
+        ];
+
+        const DEVICES = [
+            { id: 'dev001', name: 'Ultra Compact Phone', price: 850, dailyProfit: 50, days: 30, image: DEVICE_IMAGES[0] },
+            { id: 'dev002', name: 'Pro Series Smartphone', price: 1500, dailyProfit: 100, days: 30, image: DEVICE_IMAGES[1] },
+            { id: 'dev003', name: 'Future Vision Device', price: 2500, dailyProfit: 180, days: 45, image: DEVICE_IMAGES[2] },
+            { id: 'dev004', name: 'Elegant Slim Phone', price: 900, dailyProfit: 60, days: 30, image: DEVICE_IMAGES[3] },
+            { id: 'dev005', name: 'High-Performance Mobile', price: 3500, dailyProfit: 250, days: 60, image: DEVICE_IMAGES[4] },
+            { id: 'dev006', name: 'Infinity Display Phone', price: 4500, dailyProfit: 320, days: 60, image: DEVICE_IMAGES[5] },
+            { id: 'dev007', name: 'Cinematic Camera Phone', price: 5000, dailyProfit: 350, days: 75, image: DEVICE_IMAGES[6] },
+            { id: 'dev008', name: 'Ergonomic Smart Device', price: 1200, dailyProfit: 80, days: 30, image: DEVICE_IMAGES[7] },
+            { id: 'dev009', name: 'Pocket-Friendly Phone', price: 800, dailyProfit: 45, days: 30, image: DEVICE_IMAGES[8] },
+            { id: 'dev010', name: 'Ultimate Flagship Phone', price: 9000, dailyProfit: 650, days: 90, image: DEVICE_IMAGES[9] }
+        ];
+
+        // Stores intervals for each device's daily income timer
+        const dailyIncomeIntervals = {};
+        const DAILY_CLAIM_DURATION_SECONDS = 60; // 1 minute for demo (24 * 60 * 60 for 24 hours for real daily claim)
+        const DEMO_OTP = "123456"; // Fixed OTP for demo
+
+        // Function to show a specific page and hide others
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+
+            // Specific actions for pages
+            if (pageId === 'total-investing-page') {
+                fetchUserInvestments(); // Re-fetch investments and start/resume timers when investing page is viewed
+            } else {
+                // When navigating away from investing page, stop all timers to prevent background execution
+                for (const invId in dailyIncomeIntervals) {
+                    clearInterval(dailyIncomeIntervals[invId].interval);
+                }
+            }
+            if (pageId === 'home-page') {
+                fetchDevices(); // Ensure devices are always fetched/updated on home page
+            }
+        }
+
+        // Function to show a modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // Function to hide a modal
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // --- Wallet & Balance ---
+        async function updateWalletDisplay() {
+            if (currentUser && currentUser.uid) {
+                try {
+                    const userSnap = await database.ref('users/' + currentUser.uid).once('value');
+                    const userData = userSnap.val();
+                    if (userData) {
+                        document.getElementById('current-wallet-balance').innerText = `₹${(userData.walletBalance || 0).toFixed(2)}`;
+                        document.getElementById('wallet-balance-display').innerText = `₹${(userData.walletBalance || 0).toFixed(2)}`;
+                    }
+                } catch (error) {
+                    console.error("Error fetching wallet balance:", error);
+                }
+            } else {
+                 document.getElementById('current-wallet-balance').innerText = `₹0.00`;
+                document.getElementById('wallet-balance-display').innerText = `₹0.00`;
+            }
+        }
+
+        // --- Recharge Logic ---
+        document.getElementById('recharge-btn').onclick = () => showModal('rechargeModal');
+
+        async function processRecharge() {
+            if (!auth.currentUser) {
+                alert("Please login to recharge.");
+                return;
+            }
+
+            const amountInput = document.getElementById('rechargeAmount');
+            const amount = parseFloat(amountInput.value);
+
+            if (isNaN(amount) || amount < 800 || amount > 10000) {
+                alert("Please enter a valid amount between ₹800 and ₹10000.");
+                return;
+            }
+
+            const userUpiId = document.getElementById('displayed-upi-id').innerText; // Your actual UPI ID
+            const paymentMethod = document.getElementById('paymentMethodSelect').value;
+
+            alert(`Please transfer ₹${amount.toFixed(2)} to ${userUpiId} using ${paymentMethod}. After successful payment, your balance will be updated.`);
+
+            try {
+                const userRef = database.ref('users/' + auth.currentUser.uid);
+                const userSnap = await userRef.once('value');
+                const userData = userSnap.val();
+
+                const newBalance = (userData.walletBalance || 0) + amount;
+                const newPaymentHistory = userData.paymentHistory ? [...userData.paymentHistory] : [];
+                newPaymentHistory.push({
+                    id: Date.now(),
+                    type: 'Recharge',
+                    amount: amount,
+                    date: new Date().toLocaleString(),
+                    status: 'Completed'
+                });
+
+                await userRef.update({
+                    walletBalance: newBalance,
+                    paymentHistory: newPaymentHistory
+                });
+
+                updateWalletDisplay();
+                hideModal('rechargeModal');
+                amountInput.value = ''; // Clear input
+                alert("Recharge successful! Your balance has been updated.");
+            } catch (error) {
+                console.error("Error processing recharge:", error);
+                alert("Error processing recharge. Please try again.");
+            }
+        }
+
+        function copyUpiId(upiId) {
+            navigator.clipboard.writeText(upiId).then(() => {
+                alert("UPI ID copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy UPI ID: ', err);
+                alert("Could not copy UPI ID. Please copy manually.");
+            });
+        }
+
+        // --- Withdrawal Logic ---
+        document.getElementById('withdrawal-btn').onclick = async () => {
+             if (!auth.currentUser) {
+                alert("Please login to withdraw.");
+                return;
+            }
+            try {
+                const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                const userData = userSnap.val();
+                if (userData && userData.withdrawalDetails && userData.withdrawalDetails.accountNumber) {
+                    // If details exist and account number is present, show amount input
+                    document.getElementById('withdrawal-details-input').style.display = 'none';
+                    document.getElementById('withdrawal-amount-input').style.display = 'block';
+                    // Clear password fields on opening
+                    document.getElementById('withdrawAmount').value = '';
+                    document.getElementById('withdrawPasswordConfirm').value = '';
+                } else {
+                    // If no details or incomplete, show input form
+                    document.getElementById('withdrawal-details-input').style.display = 'block';
+                    document.getElementById('withdrawal-amount-input').style.display = 'none';
+                     // Pre-fill existing details if any
+                    document.getElementById('withdrawalName').value = (userData && userData.withdrawalDetails) ? userData.withdrawalDetails.name || '' : '';
+                    document.getElementById('withdrawalAccountNumber').value = (userData && userData.withdrawalDetails) ? userData.withdrawalDetails.accountNumber || '' : '';
+                    document.getElementById('withdrawalIFSC').value = (userData && userData.withdrawalDetails) ? userData.withdrawalDetails.ifscCode || '' : '';
+                    document.getElementById('withdrawalMobile').value = (userData && userData.withdrawalDetails) ? userData.withdrawalDetails.mobile || '' : '';
+                    document.getElementById('withdrawalPassword').value = ''; // Clear password field
+                }
+                showModal('withdrawalModal');
+            } catch (error) {
+                console.error("Error checking withdrawal details:", error);
+                alert("Error loading withdrawal details. Please try again.");
+            }
+        };
+
+        async function saveWithdrawalDetails() {
+             if (!auth.currentUser) {
+                alert("Session expired. Please login again.");
+                return;
+            }
+            const name = document.getElementById('withdrawalName').value.trim();
+            const accountNumber = document.getElementById('withdrawalAccountNumber').value.trim();
+            const ifsc = document.getElementById('withdrawalIFSC').value.trim();
+            const mobile = document.getElementById('withdrawalMobile').value.trim();
+            const password = document.getElementById('withdrawalPassword').value.trim();
+
+            if (!name || !accountNumber || !ifsc || !password) {
+                alert("Please fill all required details (Name, Account No., IFSC, Password).");
+                return;
+            }
+
+            try {
+                // For demo, we are NOT verifying password against Firebase Auth password due to security.
+                // A real app would typically re-authenticate or verify password server-side.
+                // Here, we just check if it's non-empty. For a secure app, don't store passwords like this.
+                // You would typically use Firebase Authentication's reauthenticateWithCredential.
+                // For this demo, let's assume if the user is logged in, they can save details.
+
+                const userRef = database.ref('users/' + auth.currentUser.uid);
+                await userRef.update({
+                    withdrawalDetails: {
+                        name: name,
+                        accountNumber: accountNumber,
+                        ifscCode: ifsc,
+                        mobile: mobile,
+                        savedAt: new Date().toLocaleString()
+                    }
+                });
+
+                alert("Bank details saved successfully! You can now request withdrawal.");
+                document.getElementById('withdrawal-details-input').style.display = 'none';
+                document.getElementById('withdrawal-amount-input').style.display = 'block';
+                document.getElementById('withdrawalPassword').value = ''; // Clear password field after success
+            } catch (error) {
+                console.error("Error saving withdrawal details:", error);
+                alert("Error saving bank details. Please try again.");
+            }
+        }
+
+        function showModifyAccount() {
+            document.getElementById('withdrawal-amount-input').style.display = 'none';
+            document.getElementById('withdrawal-details-input').style.display = 'block';
+            // Pre-fill existing details if any (will be done by the initial modal open logic)
+            document.getElementById('withdrawalPassword').value = ''; // Clear password field
+        }
+
+        async function requestWithdrawal() {
+             if (!auth.currentUser) {
+                alert("Session expired. Please login again.");
+                return;
+            }
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const password = document.getElementById('withdrawPasswordConfirm').value.trim();
+
+            if (isNaN(amount) || amount <= 0 || !password) {
+                alert("Please enter a valid amount and password.");
+                return;
+            }
+
+            try {
+                const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                const userData = userSnap.val();
+
+                if (!userData || amount > (userData.walletBalance || 0)) {
+                    alert("Insufficient balance.");
+                    return;
+                }
+
+                // For demo, verifying password by simply checking it's not empty.
+                // In a real app, this should be a secure server-side check or Firebase re-authentication.
+                // For a mobile number/password based login, you might need to re-authenticate the user.
+                // Since Firebase Auth manages passwords securely, we cannot directly access them for comparison.
+                // A better approach for password verification on withdrawal would be to re-prompt user for Firebase Auth login.
+                // For this simplified demo, we'll bypass real password verification here.
+                // You would implement a proper Firebase Auth re-authentication flow here.
+                // Example (Conceptual - requires user interaction):
+                // const credential = firebase.auth.PhoneAuthProvider.credential(phoneNumber, password);
+                // await auth.currentUser.reauthenticateWithCredential(credential);
+                // For now, if the user is logged in, we proceed.
+                if (password.length < 6) { // Simple check for password presence, not actual validation
+                    alert("Please enter your password for confirmation.");
+                    return;
+                }
+
+
+                const newBalance = userData.walletBalance - amount;
+                const newWithdrawalRequests = userData.withdrawalRequests ? [...userData.withdrawalRequests] : [];
+                const newPaymentHistory = userData.paymentHistory ? [...userData.paymentHistory] : [];
+
+                const withdrawalReq = {
+                    id: Date.now(), // Unique request ID
+                    amount: amount,
+                    status: 'Pending', // In real app, admin confirms
+                    date: new Date().toLocaleString(),
+                    details: { ...userData.withdrawalDetails } // Copy details for this request
+                };
+                newWithdrawalRequests.push(withdrawalReq);
+
+                newPaymentHistory.push({
+                    id: Date.now() + 1, // Another unique ID
+                    type: 'Withdrawal',
+                    amount: amount,
+                    date: new Date().toLocaleString(),
+                    status: 'Pending'
+                });
+
+                await database.ref('users/' + auth.currentUser.uid).update({
+                    walletBalance: newBalance,
+                    withdrawalRequests: newWithdrawalRequests,
+                    paymentHistory: newPaymentHistory
+                });
+
+                updateWalletDisplay();
+                hideModal('withdrawalModal');
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('withdrawPasswordConfirm').value = '';
+                alert("Withdrawal request submitted! It will be processed soon.");
+            } catch (error) {
+                console.error("Error requesting withdrawal:", error);
+                alert("Error submitting withdrawal request. Please try again.");
+            }
+        }
+
+        // --- Device Listing & Investment ---
+        function fetchDevices() {
+            const deviceListDiv = document.getElementById('device-list');
+            deviceListDiv.innerHTML = ''; // Clear previous devices
+
+            DEVICES.forEach(device => {
+                const totalProfit = device.dailyProfit * device.days;
+                const totalReturn = totalProfit + device.price;
+
+                const deviceCard = document.createElement('div');
+                deviceCard.className = 'device-card';
+                deviceCard.innerHTML = `
+                    <img src="${device.image}" alt="${device.name}">
+                    <div class="device-details">
+                        <h3>${device.name}</h3>
+                        <p><strong>Investment:</strong> ₹${device.price}</p>
+                        <p><strong>Daily Income:</strong> ₹${device.dailyProfit}</p>
+                        <p><strong>Duration:</strong> ${device.days} days</p>
+                        <p><strong>Total Profit:</strong> ₹${totalProfit.toFixed(2)}</p>
+                        <p><strong>Total Return:</strong> ₹${totalReturn.toFixed(2)}</p>
+                        <div class="device-investment">
+                            <div class="quantity-control">
+                                <button onclick="changeQuantity('${device.id}', -1)">-</button>
+                                <span id="qty-${device.id}">1</span>
+                                <button onclick="changeQuantity('${device.id}', 1)">+</button>
+                            </div>
+                            <button onclick="investInDevice('${device.id}')">Invest Now</button>
+                        </div>
+                    </div>
+                `;
+                deviceListDiv.appendChild(deviceCard);
+            });
+        }
+
+        // Quantity control for devices (client-side only for display)
+        function changeQuantity(deviceId, change) {
+            const qtySpan = document.getElementById(`qty-${deviceId}`);
+            let currentQty = parseInt(qtySpan.innerText);
+            currentQty += change;
+            if (currentQty < 1) currentQty = 1;
+            qtySpan.innerText = currentQty;
+        }
+
+        async function investInDevice(deviceId) {
+             if (!auth.currentUser) {
+                alert("Please login to invest.");
+                return;
+            }
+            const device = DEVICES.find(d => d.id === deviceId);
+            if (!device) {
+                alert("Device not found.");
+                return;
+            }
+
+            const quantity = parseInt(document.getElementById(`qty-${deviceId}`).innerText);
+            const totalInvestmentCost = device.price * quantity;
+
+            try {
+                const userRef = database.ref('users/' + auth.currentUser.uid);
+                const userSnap = await userRef.once('value');
+                const userData = userSnap.val();
+
+                if (!userData || userData.walletBalance < totalInvestmentCost) {
+                    alert(`Insufficient balance. You need ₹${totalInvestmentCost.toFixed(2)}.`);
+                    return;
+                }
+
+                const newBalance = userData.walletBalance - totalInvestmentCost;
+                const newInvestments = userData.investments ? [...userData.investments] : [];
+                const newPaymentHistory = userData.paymentHistory ? [...userData.paymentHistory] : [];
+
+                const investment = {
+                    id: 'inv_' + Date.now() + Math.random().toString(36).substr(2, 5), // More unique ID
+                    deviceId: device.id,
+                    deviceName: device.name,
+                    deviceImage: device.image, // Store image URL with investment
+                    investmentAmount: totalInvestmentCost,
+                    quantity: quantity,
+                    dailyProfitPerDevice: device.dailyProfit, // Store per device profit
+                    totalDailyProfit: device.dailyProfit * quantity, // Total daily profit for this investment
+                    days: device.days,
+                    startDate: new Date().getTime(),
+                    endDate: new Date().getTime() + device.days * 24 * 60 * 60 * 1000,
+                    status: 'active',
+                    currentProfitEarned: 0,
+                    lastProfitClaimTimestamp: new Date().getTime() // Initial claim time
+                };
+                newInvestments.push(investment);
+
+                newPaymentHistory.push({
+                    id: Date.now(),
+                    type: 'Investment',
+                    amount: totalInvestmentCost,
+                    date: new Date().toLocaleString(),
+                    status: 'Completed'
+                });
+
+                await userRef.update({
+                    walletBalance: newBalance,
+                    investments: newInvestments,
+                    paymentHistory: newPaymentHistory
+                });
+
+                updateWalletDisplay();
+                alert(`Successfully invested ₹${totalInvestmentCost.toFixed(2)} in ${quantity} x ${device.name}(s)!`);
+                showPage('total-investing-page'); // Automatically switch to the investing page
+            } catch (error) {
+                console.error("Error investing in device:", error);
+                alert("Error investing. Please try again.");
+            }
+        }
+
+        // --- Total Investing Page Logic (Individual Device Progress) ---
+
+        async function updateInvestmentProgress(investment) {
+            const cardElement = document.getElementById(`investment-card-${investment.id}`);
+            if (!cardElement) return;
+
+            const progressLine = cardElement.querySelector('.progress-line');
+            const progressText = cardElement.querySelector('.progress-text');
+            const getItBtn = cardElement.querySelector('.get-it-button');
+            const totalEarnedDisplay = cardElement.querySelector('.total-earned-display');
+
+            const currentTime = new Date().getTime();
+
+            const deviceDetails = DEVICES.find(d => d.id === investment.deviceId);
+            if (!deviceDetails) {
+                console.error("Device details not found for investment:", investment.deviceId);
+                return;
+            }
+
+            if (currentTime >= investment.endDate) {
+                if (investment.status === 'active') {
+                    // Update status in Firebase
+                    try {
+                        // Find the actual index of the investment in the user's investments array
+                        const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                        const userData = userSnap.val();
+                        const invIndexInDB = (userData.investments || []).findIndex(invItem => invItem.id === investment.id);
+                        if (invIndexInDB !== -1) {
+                            await database.ref('users/' + auth.currentUser.uid + '/investments/' + invIndexInDB).update({ status: 'expired' });
+                        }
+                        investment.status = 'expired'; // Update local object
+                    } catch (error) {
+                        console.error("Error updating investment status to expired:", error);
+                    }
+                }
+                progressLine.style.width = '100%';
+                progressText.innerText = "Expired";
+                getItBtn.style.display = 'none';
+                totalEarnedDisplay.innerText = `Total Earned: ₹${investment.currentProfitEarned.toFixed(2)} (Expired)`;
+                clearInterval(dailyIncomeIntervals[investment.id]?.interval);
+                delete dailyIncomeIntervals[investment.id];
+                return;
+            }
+
+            const timeElapsedSinceLastClaim = (currentTime - investment.lastProfitClaimTimestamp);
+            const timeElapsedInSeconds = timeElapsedSinceLastClaim / 1000;
+
+            const canClaim = timeElapsedInSeconds >= DAILY_CLAIM_DURATION_SECONDS;
+
+            if (canClaim) {
+                progressLine.style.width = '100%';
+                progressText.innerText = "Ready to Claim!";
+                getItBtn.classList.add('active');
+                getItBtn.disabled = false;
+            } else {
+                const percentage = (timeElapsedInSeconds / DAILY_CLAIM_DURATION_SECONDS) * 100;
+                progressLine.style.width = `${percentage}%`;
+
+                const timeLeftForCurrentCycle = DAILY_CLAIM_DURATION_SECONDS - (timeElapsedInSeconds % DAILY_CLAIM_DURATION_SECONDS);
+                const minutes = Math.floor(timeLeftForCurrentCycle / 60);
+                const seconds = Math.floor(timeLeftForCurrentCycle % 60);
+
+                progressText.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                getItBtn.classList.remove('active');
+                getItBtn.disabled = true;
+            }
+
+            totalEarnedDisplay.innerText = `Total Earned: ₹${investment.currentProfitEarned.toFixed(2)}`;
+        }
+
+
+        async function claimDailyIncome(investmentId) {
+             if (!auth.currentUser) {
+                alert("Session expired. Please login again.");
+                return;
+            }
+            const userRef = database.ref('users/' + auth.currentUser.uid);
+            const userSnap = await userRef.once('value');
+            const userData = userSnap.val();
+
+            if (!userData || !userData.investments) {
+                alert("No investments found to claim from.");
+                return;
+            }
+
+            let investmentIndex = userData.investments.findIndex(inv => inv.id === investmentId);
+            if (investmentIndex === -1) {
+                alert("Investment not found.");
+                return;
+            }
+
+            let investment = userData.investments[investmentIndex];
+
+            const cardElement = document.getElementById(`investment-card-${investment.id}`);
+            const getItBtn = cardElement.querySelector('.get-it-button');
+
+            if (!getItBtn.classList.contains('active')) {
+                alert("Please wait for the timer to complete for this device.");
+                return;
+            }
+
+            const currentTime = new Date().getTime();
+            const timeSinceLastClaim = (currentTime - investment.lastProfitClaimTimestamp);
+            let claimCyclesPassed = Math.floor(timeSinceLastClaim / (DAILY_CLAIM_DURATION_SECONDS * 1000));
+
+            if (claimCyclesPassed < 1) {
+                alert("Not yet ready to claim income from this device. Please wait.");
+                return;
+            }
+
+            let profitToAdd = investment.totalDailyProfit * claimCyclesPassed;
+
+            const deviceDetails = DEVICES.find(d => d.id === investment.deviceId);
+            if (!deviceDetails) {
+                 console.error("Device details not found for investment:", investment.deviceId);
+                 alert("Error: Device details missing.");
+                 return;
+            }
+
+            const maxPossibleProfit = deviceDetails.dailyProfit * investment.quantity * deviceDetails.days;
+
+            if (investment.currentProfitEarned + profitToAdd > maxPossibleProfit) {
+                const remainingProfitCapacity = maxPossibleProfit - investment.currentProfitEarned;
+                if (remainingProfitCapacity > 0) {
+                    profitToAdd = remainingProfitCapacity;
+                } else {
+                    profitToAdd = 0;
+                }
+            }
+
+            if (profitToAdd <= 0) {
+                 alert("No profit available to claim at this moment.");
+                 updateInvestmentProgress(investment); // Update state even if no profit was added
+                 return;
+            }
+
+            const newBalance = userData.walletBalance + profitToAdd;
+            const newCurrentProfitEarned = investment.currentProfitEarned + profitToAdd;
+            const newLastProfitClaimTimestamp = investment.lastProfitClaimTimestamp + (claimCyclesPassed * DAILY_CLAIM_DURATION_SECONDS * 1000);
+
+            const newPaymentHistory = userData.paymentHistory ? [...userData.paymentHistory] : [];
+            newPaymentHistory.push({
+                id: Date.now(),
+                type: `Daily Income (${investment.deviceName})`,
+                amount: profitToAdd,
+                date: new Date().toLocaleString(),
+                status: 'Completed'
+            });
+
+            // Update specific investment and payment history in Firebase
+            await userRef.update({
+                walletBalance: newBalance,
+                [`investments/${investmentIndex}/currentProfitEarned`]: newCurrentProfitEarned,
+                [`investments/${investmentIndex}/lastProfitClaimTimestamp`]: newLastProfitClaimTimestamp,
+                paymentHistory: newPaymentHistory
+            });
+
+            // Update the local investment object for immediate UI refresh
+            investment.currentProfitEarned = newCurrentProfitEarned;
+            investment.lastProfitClaimTimestamp = newLastProfitClaimTimestamp;
+
+            updateWalletDisplay();
+            alert(`Collected ₹${profitToAdd.toFixed(2)} from ${investment.deviceName}!`);
+
+            updateInvestmentProgress(investment); // Force update to reset visuals for the next cycle
+        }
+
+        // Display user's active investments with individual progress bars
+        async function fetchUserInvestments() {
+             if (!auth.currentUser) {
+                document.getElementById('active-investments-list').innerHTML = '<p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">No active investments yet. Invest in devices from the Home page!</p>';
+                return;
+            }
+            const investmentsListDiv = document.getElementById('active-investments-list');
+            investmentsListDiv.innerHTML = '';
+
+            for (const invId in dailyIncomeIntervals) {
+                clearInterval(dailyIncomeIntervals[invId].interval);
+                delete dailyIncomeIntervals[invId];
+            }
+
+            try {
+                const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                const userData = userSnap.val();
+                const investments = userData.investments || [];
+
+                let hasActiveInvestments = false;
+                let hasExpiredInvestments = false;
+
+                const updates = {}; // To batch Firebase updates for expired investments
+
+                investments.forEach((inv, index) => {
+                    const currentTime = new Date().getTime();
+                    if (currentTime >= inv.endDate && inv.status === 'active') {
+                        inv.status = 'expired';
+                        updates[`investments/${index}/status`] = 'expired';
+                    }
+                });
+
+                if (Object.keys(updates).length > 0) {
+                    await database.ref('users/' + auth.currentUser.uid).update(updates);
+                }
+
+                investments.forEach(inv => {
+                    const currentTime = new Date().getTime();
+                    const remainingMilliseconds = inv.endDate - currentTime;
+                    const remainingDays = Math.ceil(remainingMilliseconds / (1000 * 60 * 60 * 24));
+
+                    if (inv.status === 'active') {
+                        hasActiveInvestments = true;
+                        const investmentCard = document.createElement('div');
+                        investmentCard.className = 'investment-progress-card';
+                        investmentCard.id = `investment-card-${inv.id}`;
+
+                        investmentCard.innerHTML = `
+                            <img src="${inv.deviceImage}" alt="${inv.deviceName}" class="device-image-thumb">
+                            <h3>${inv.deviceName} (${inv.quantity}x)</h3>
+                            <p style="font-size: 14px; margin-bottom: 5px;">Investment: ₹${inv.investmentAmount.toFixed(2)}</p>
+                            <p style="font-size: 14px; margin-bottom: 5px;">Daily Income: ₹${inv.totalDailyProfit.toFixed(2)}</p>
+                            <p style="font-size: 13px; color: #ccc;">Ends On: ${new Date(inv.endDate).toLocaleDateString()} (${remainingDays > 0 ? remainingDays : 0} days left)</p>
+                            <div class="total-earned-display">Total Earned: ₹${(inv.currentProfitEarned || 0).toFixed(2)}</div>
+                            <div class="progress-box">
+                                <div class="progress-line"></div>
+                                <span class="progress-text">00:00</span>
+                            </div>
+                            <button class="get-it-button" onclick="claimDailyIncome('${inv.id}')">Get It</button>
+                        `;
+                        investmentsListDiv.appendChild(investmentCard);
+
+                        dailyIncomeIntervals[inv.id] = {
+                            interval: setInterval(() => updateInvestmentProgress(inv), 1000)
+                        };
+                        updateInvestmentProgress(inv);
+                    } else if (inv.status === 'expired') {
+                        hasExpiredInvestments = true;
+                        const investmentCard = document.createElement('div');
+                        investmentCard.className = 'investment-progress-card';
+                        investmentCard.id = `investment-card-${inv.id}`;
+
+                        investmentCard.innerHTML = `
+                            <img src="${inv.deviceImage}" alt="${inv.deviceName}" class="device-image-thumb" style="filter: grayscale(80%);">
+                            <h3 style="color: #bbb;">${inv.deviceName} (${inv.quantity}x) - Expired</h3>
+                            <p style="font-size: 14px; margin-bottom: 5px; color: #bbb;">Investment: ₹${inv.investmentAmount.toFixed(2)}</p>
+                            <p style="font-size: 14px; margin-bottom: 5px; color: #bbb;">Daily Income: ₹${inv.totalDailyProfit.toFixed(2)}</p>
+                            <p style="font-size: 13px; color: #999;">Ended On: ${new Date(inv.endDate).toLocaleDateString()}</p>
+                            <div class="total-earned-display" style="color: #bbb;">Total Earned: ₹${(inv.currentProfitEarned || 0).toFixed(2)}</div>
+                            <div class="progress-box" style="background-color: #444;">
+                                <div class="progress-line" style="width: 100%; background-image: linear-gradient(to right, #777, #999);"></div>
+                                <span class="progress-text">Expired</span>
+                            </div>
+                            <button class="get-it-button" style="display: none;">Get It</button>
+                        `;
+                        investmentsListDiv.appendChild(investmentCard);
+                    }
+                });
+
+                if (!hasActiveInvestments && !hasExpiredInvestments) {
+                    investmentsListDiv.innerHTML = '<p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">No active investments yet. Invest in devices from the Home page!</p>';
+                }
+            } catch (error) {
+                console.error("Error fetching user investments:", error);
+                investmentsListDiv.innerHTML = '<p style="text-align: center; color: red;">Error loading investments. Please try again.</p>';
+            }
+        }
+
+
+        // --- Refer & Earn Logic ---
+        function generateReferralCode(uid) {
+            // A simple way to generate a unique code from UID
+            return `VIVO-${uid.substring(0, 4).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+        }
+
+        async function generateReferralLink() {
+            if (auth.currentUser) {
+                try {
+                    const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                    const userData = userSnap.val();
+                    if (userData && userData.referralCode) {
+                        const link = `${window.location.origin}/?ref=${userData.referralCode}`;
+                        document.getElementById('referral-link').innerText = link;
+                    } else {
+                        document.getElementById('referral-link').innerText = 'Error loading referral link.';
+                    }
+                } catch (error) {
+                    console.error("Error generating referral link:", error);
+                    document.getElementById('referral-link').innerText = 'Error loading referral link.';
+                }
+            } else {
+                document.getElementById('referral-link').innerText = 'Please login to get your referral link.';
+            }
+        }
+
+        function copyReferralLink() {
+            const link = document.getElementById('referral-link').innerText;
+             if (link.includes('login') || link.includes('Error')) {
+                alert('Please login or ensure referral link is loaded correctly.');
+                return;
+            }
+            navigator.clipboard.writeText(link).then(() => {
+                alert("Referral link copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy link: ', err);
+                alert("Could not copy link. Please copy manually.");
+            });
+        }
+
+        function shareLink(platform) {
+            const link = document.getElementById('referral-link').innerText;
+             if (link.includes('login') || link.includes('Error')) {
+                alert('Please login to share your referral link.');
+                return;
+            }
+            const text = encodeURIComponent(`Join Vivo and start earning! Use my referral link: ${link}`);
+            let shareUrl = '';
+
+            switch (platform) {
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${text}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${text}`;
+                    break;
+                case 'instagram':
+                    alert("Instagram does not support direct sharing via URL. Please copy the link and share manually.");
+                    copyReferralLink();
+                    return;
+                case 'telegram':
+                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`;
+                    break;
+                default:
+                    return;
+            }
+            window.open(shareUrl, '_blank');
+        }
+
+        // --- Profile Page Options ---
+        document.getElementById('withdrawal-request-option').onclick = async () => {
+             if (!auth.currentUser) {
+                alert("Please login to view withdrawal requests.");
+                return;
+            }
+            showModal('withdrawalRequestModal');
+            const requestsListDiv = document.getElementById('withdrawal-requests-list');
+            requestsListDiv.innerHTML = '';
+
+            try {
+                const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                const userData = userSnap.val();
+                const withdrawalRequests = userData.withdrawalRequests || [];
+
+                if (withdrawalRequests.length === 0) {
+                    requestsListDiv.innerHTML = '<p style="text-align: center; color: #888;">No withdrawal requests found.</p>';
+                    return;
+                }
+
+                withdrawalRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                withdrawalRequests.forEach(req => {
+                    const statusColor = req.status === 'Pending' ? 'orange' : req.status === 'Approved' ? 'green' : 'red';
+                    requestsListDiv.innerHTML += `
+                        <div class="history-item">
+                            <span><strong>Amount:</strong> ₹${req.amount.toFixed(2)}</span>
+                            <span><strong>Status:</strong> <span class="status-text" style="color: ${statusColor};">${req.status}</span></span>
+                            <span><strong>Date:</strong> ${req.date}</span>
+                            <span>Bank: ${req.details.accountNumber} (${req.details.name})</span>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error fetching withdrawal requests:", error);
+                requestsListDiv.innerHTML = '<p style="text-align: center; color: red;">Error loading withdrawal requests. Please try again.</p>';
+            }
+        };
+
+        document.getElementById('payment-history-option').onclick = async () => {
+             if (!auth.currentUser) {
+                alert("Please login to view payment history.");
+                return;
+            }
+            showModal('paymentHistoryModal');
+            const historyListDiv = document.getElementById('payment-history-list');
+            historyListDiv.innerHTML = '';
+
+            try {
+                const userSnap = await database.ref('users/' + auth.currentUser.uid).once('value');
+                const userData = userSnap.val();
+                const paymentHistory = userData.paymentHistory || [];
+
+                if (paymentHistory.length === 0) {
+                    historyListDiv.innerHTML = '<p style="text-align: center; color: #888;">No payment history found.</p>';
+                    return;
+                }
+
+                paymentHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                paymentHistory.forEach(item => {
+                    const statusColor = item.status === 'Completed' ? 'green' : item.status === 'Pending' ? 'orange' : 'red';
+                    const amountColor = (item.type.includes('Recharge') || item.type.includes('Income')) ? 'green' : 'red';
+                    historyListDiv.innerHTML += `
+                        <div class="history-item">
+                            <span><strong>Type:</strong> ${item.type}</span>
+                            <span><strong>Amount:</strong> <strong style="color: ${amountColor};">₹${item.amount.toFixed(2)}</strong></span>
+                            <span><strong>Status:</strong> <span class="status-text" style="color: ${statusColor};">${item.status}</span></span>
+                            <span><strong>Date:</strong> ${item.date}</span>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error fetching payment history:", error);
+                historyListDiv.innerHTML = '<p style="text-align: center; color: red;">Error loading payment history. Please try again.</p>';
+            }
+        };
+
+        document.getElementById('about-option').onclick = () => {
+            const phoneNumber = '9389663346';
+            window.open(`https://wa.me/${phoneNumber}?text=Hello%2C%20I%20have%20a%20question%20about%20Vivo%20App.`, '_blank');
+        };
+
+        // --- Navigation Logic ---
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!auth.currentUser) {
+                    alert("Please login to access this section.");
+                    return;
+                }
+                const pageId = this.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+
+        // --- Login/Signup Logic (Now using Firebase Authentication & Realtime Database) ---
+        function toggleForm(formType) {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('signup-form').classList.remove('active');
+            if (formType === 'login') {
+                document.getElementById('login-form').classList.add('active');
+                // Clear signup fields when switching to login
+                document.getElementById('signup-mobile').value = '';
+                document.getElementById('signup-name').value = '';
+                document.getElementById('signup-otp').value = '';
+
+            } else {
+                document.getElementById('signup-form').classList.add('active');
+                // Clear login fields when switching to signup
+                document.getElementById('login-mobile').value = '';
+                document.getElementById('login-password').value = '';
+            }
+        }
+
+        async function sendOtp() {
+            const mobile = document.getElementById('signup-mobile').value.trim();
+            if (mobile.length !== 10 || isNaN(mobile)) {
+                alert("Please enter a valid 10-digit mobile number.");
+                return;
+            }
+
+            // In a real app, you'd send an OTP via a backend service or Firebase Phone Authentication.
+            // For this demo, we use a fixed OTP.
+            // Firebase Phone Auth setup is more complex and requires a reCAPTCHA verifier.
+            alert(`OTP ${DEMO_OTP} sent to ${mobile} (Demo OTP: ${DEMO_OTP}).`);
+        }
+
+        async function handleSignup() {
+            const mobile = document.getElementById('signup-mobile').value.trim();
+            const name = document.getElementById('signup-name').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const repassword = document.getElementById('signup-repassword').value;
+            const otp = document.getElementById('signup-otp').value.trim();
+            const email = mobile + "@vivodemo.com"; // Using mobile as part of a unique email for Firebase Auth
+
+            if (mobile.length !== 10 || isNaN(mobile) || !name || !password || !repassword || !otp) {
+                alert("Please fill all fields.");
+                return;
+            }
+            if (password !== repassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+            if (otp !== DEMO_OTP) {
+                alert("Incorrect OTP.");
+                return;
+            }
+            if (password.length < 6) {
+                alert("Password should be at least 6 characters.");
+                return;
+            }
+
+            try {
+                // Create user with Email and Password (using mobile as part of email)
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Save additional user data to Realtime Database
+                const newUserRef = database.ref('users/' + user.uid);
+                const referralCode = generateReferralCode(user.uid);
+
+                await newUserRef.set({
+                    mobile: mobile,
+                    name: name,
+                    walletBalance: 0,
+                    investments: [],
+                    withdrawalDetails: {},
+                    withdrawalRequests: [],
+                    paymentHistory: [],
+                    referralCode: referralCode,
+                    createdAt: new Date().toLocaleString()
+                });
+
+                alert("Account created successfully! Please login.");
+                toggleForm('login');
+                document.getElementById('login-mobile').value = mobile;
+                document.getElementById('login-password').value = '';
+            } catch (error) {
+                console.error("Signup error:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    alert("Account with this mobile number already exists. Please Login.");
+                } else if (error.code === 'auth/weak-password') {
+                    alert("Password is too weak. Please choose a stronger password.");
+                } else {
+                    alert("Signup failed: " + error.message);
+                }
+            }
+        }
+
+        async function handleLogin() {
+            const mobile = document.getElementById('login-mobile').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const email = mobile + "@vivodemo.com"; // Match the email format used in signup
+
+            if (mobile.length !== 10 || isNaN(mobile) || !password) {
+                alert("Please enter mobile number and password.");
+                return;
+            }
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // User is signed in via Firebase Authentication
+                // Now, fetch the full user data from Realtime Database
+                const userSnap = await database.ref('users/' + userCredential.user.uid).once('value');
+                const userData = userSnap.val();
+
+                if (userData) {
+                    // Set global currentUser for easier access (Firebase User + custom data)
+                    currentUser = {
+                        uid: userCredential.user.uid,
+                        ...userData // Merge Firebase user data with custom data
+                    };
+                    alert("Login successful!");
+                    // Update UI and navigate to app
+                    document.getElementById('user-mobile-display').innerText = currentUser.mobile;
+                    document.getElementById('app-container').style.display = 'flex';
+                    document.getElementById('login-page').style.display = 'none';
+                    showPage('home-page');
+                    updateWalletDisplay();
+                    generateReferralLink();
+                    console.log("Auto-logged in Firebase user:", currentUser.mobile);
+                } else {
+                    // This should ideally not happen if signup was successful
+                    alert("User data not found in database. Please contact support.");
+                    auth.signOut(); // Log out Firebase user if data is missing
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    alert("Invalid mobile number or password.");
+                } else {
+                    alert("Login failed: " + error.message);
+                }
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await auth.signOut();
+                currentUser = null;
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('login-page').style.display = 'flex';
+                for (const invId in dailyIncomeIntervals) {
+                    clearInterval(dailyIncomeIntervals[invId].interval);
+                    delete dailyIncomeIntervals[invId];
+                }
+                hideModal('rechargeModal');
+                hideModal('withdrawalModal');
+                hideModal('withdrawalRequestModal');
+                hideModal('paymentHistoryModal');
+                alert("Logged out successfully.");
+                updateWalletDisplay(); // Reset wallet display
+                toggleForm('login'); // Show login form
+            } catch (error) {
+                console.error("Logout error:", error);
+                alert("Logout failed: " + error.message);
+            }
+        }
+
+        // --- Initialize App ---
+        function initializeApp() {
+            // Listen for Firebase Auth state changes
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // User is signed in, fetch their custom data from Realtime Database
+                    try {
+                        const userSnap = await database.ref('users/' + user.uid).once('value');
+                        const userData = userSnap.val();
+
+                        if (userData) {
+                            currentUser = {
+                                uid: user.uid,
+                                ...userData
+                            };
+                            document.getElementById('user-mobile-display').innerText = currentUser.mobile;
+                            document.getElementById('app-container').style.display = 'flex';
+                            document.getElementById('login-page').style.display = 'none';
+                            showPage('home-page');
+                            updateWalletDisplay();
+                            generateReferralLink();
+                            console.log("Auto-logged in Firebase user:", currentUser.mobile);
+                        } else {
+                            // Data for this UID is missing, log out
+                            console.warn("User data missing for UID:", user.uid, ". Logging out.");
+                            auth.signOut();
+                        }
+                    } catch (error) {
+                        console.error("Error fetching user data on auth state change:", error);
+                        auth.signOut(); // Log out if there's an error fetching data
+                    }
+                } else {
+                    // No user is signed in
+                    currentUser = null;
+                    document.getElementById('app-container').style.display = 'none';
+                    document.getElementById('login-page').style.display = 'flex';
+                    toggleForm('login');
+                    updateWalletDisplay(); // Reset wallet display
+                    console.log("No Firebase user logged in.");
+                }
+            });
+        }
+
+        // Call initializeApp when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    </script>
+</body>
+</html>
